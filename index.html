@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WordQuest: The School Canteen - Interactive Learning Media</title>
+<!-- Tailwind CSS v3 with forms & container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Fredoka & Nunito for friendly cartoonish educational vibe -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Nunito:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif'],
+            nunito: ['Nunito', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              cyan: '#26c6da',
+              cyanLight: '#e0f7fa',
+              cyanDark: '#0097a7',
+              orange: '#ff9800',
+              orangeLight: '#fff3e0',
+              yellow: '#fbc02d',
+              yellowLight: '#fffde7',
+              green: '#4caf50',
+              greenLight: '#e8f5e9',
+              pink: '#ff4081',
+              pinkLight: '#fce4ec',
+              purple: '#9c27b0',
+              purpleLight: '#f3e5f5',
+            }
+          },
+          boxShadow: {
+            'bubbly': '0 8px 0px rgba(0,0,0,0.08), 0 15px 25px rgba(0,0,0,0.05)',
+            'bubbly-active': '0 2px 0px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.05)',
+            'card-lift': '0 10px 0px rgba(0,0,0,0.06), 0 18px 25px -5px rgba(0, 0, 0, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="base-styling">
+    body {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+    }
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+    /* Hide scrollbars but keep smooth interaction */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style data-purpose="animation-effects">
+    @keyframes bounceGentle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-bounce-gentle {
+      animation: bounceGentle 2.5s infinite ease-in-out;
+    }
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+    .animate-pulse-soft {
+      animation: pulseSoft 2s infinite ease-in-out;
+    }
+    .card-hover-pop {
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .card-hover-pop:hover {
+      transform: translateY(-4px) scale(1.02);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between selection:bg-brand-orange selection:text-white">
+<!-- BEGIN: TopApplicationHeader -->
+<header class="bg-white border-b-4 border-brand-cyan shadow-sm sticky top-0 z-50 px-4 py-2.5 sm:px-6">
+<div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+<!-- Brand Logo & Title -->
+<div class="flex items-center space-x-3 cursor-pointer" onclick="goToSlide(1)">
+<div class="w-10 h-10 rounded-2xl bg-amber-400 border-2 border-amber-600 flex items-center justify-center text-2xl shadow-sm">
+          🍳
+        </div>
+<div>
+<div class="flex items-center gap-1.5">
+<h1 class="text-xl sm:text-2xl font-black tracking-tight text-amber-500 drop-shadow-[0_2px_0px_rgba(217,119,6,0.3)]">
+              Word<span class="text-teal-600">Quest</span>
+</h1>
+<span class="text-xs font-black uppercase tracking-wider bg-rose-500 text-white px-2 py-0.5 rounded-full">
+              Grade VII
+            </span>
+</div>
+<p class="text-xs font-bold text-slate-400">The School Canteen • Interactive Learning Media</p>
+</div>
+</div>
+<!-- Quick Slide Dropdown Selector & Navigation Pill -->
+<div class="flex items-center space-x-2 sm:space-x-4">
+<div class="flex items-center bg-sky-50 border-2 border-sky-200 rounded-full px-3 py-1 text-xs sm:text-sm font-bold text-sky-800">
+<span class="text-slate-400 mr-1.5 hidden sm:inline">Jump to:</span>
+<select class="bg-transparent border-0 font-extrabold text-teal-700 p-0 pr-4 focus:ring-0 cursor-pointer text-xs sm:text-sm" id="slideDropdown" onchange="goToSlide(parseInt(this.value))">
+<!-- Populated via JS -->
+</select>
+</div>
+<!-- Current Slide Indicator -->
+<div class="bg-amber-100 border-2 border-amber-300 rounded-full px-3.5 py-1 text-xs sm:text-sm font-black text-amber-800 flex items-center space-x-1">
+<span>Slide</span>
+<span class="text-base text-rose-600" id="slideCounterText">1</span>
+<span class="text-slate-400">/ 20</span>
+</div>
+</div>
+</div>
+</header>
+<!-- END: TopApplicationHeader -->
+<!-- BEGIN: MainContentStageArea -->
+<main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-center">
+<!-- Active Interactive Slide Frame -->
+<div class="bg-white rounded-3xl border-4 border-slate-200 shadow-2xl relative overflow-hidden min-h-[580px] sm:min-h-[620px] flex flex-col transition-all duration-300" id="slideViewport">
+<!-- Slide Category Tag Bar -->
+<div class="px-6 py-2.5 flex items-center justify-between border-b-2 bg-slate-50 border-slate-100" id="slideHeaderBar">
+<div class="flex items-center space-x-2">
+<span class="bg-teal-500 text-white font-extrabold text-xs tracking-wider uppercase px-3 py-0.5 rounded-full shadow-sm" id="slideCategoryBadge">
+            WELCOME
+          </span>
+<span class="text-xs sm:text-sm font-bold text-slate-500" id="slideTopicName">
+            Interactive English Experience
+          </span>
+</div>
+<div class="flex items-center space-x-1.5">
+<span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>
+<span class="text-xs font-bold text-slate-400 uppercase tracking-widest hidden sm:inline">Active Session</span>
+</div>
+</div>
+<!-- Slide Inner Canvas (Dynamic Slides 1-20 Injected/Toggled) -->
+<div class="flex-1 p-4 sm:p-8 flex flex-col items-center justify-center relative overflow-y-auto no-scrollbar" id="slideContainer">
+<!-- ================= SLIDE 1: WELCOME ================= -->
+<div class="slide-page w-full flex flex-col items-center text-center max-w-2xl mx-auto py-4" id="slide-1">
+<div class="relative mb-4">
+<span class="absolute -top-6 -right-6 text-4xl animate-bounce-gentle">✨</span>
+<div class="inline-block bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 text-white px-8 py-3 rounded-3xl shadow-lg border-4 border-white transform -rotate-1">
+<h2 class="text-4xl sm:text-5xl font-black tracking-wide drop-shadow-md">WordQuest</h2>
+<p class="text-lg sm:text-xl font-bold tracking-widest uppercase bg-rose-600/90 rounded-full px-4 py-0.5 mt-1">The School Canteen</p>
+</div>
+</div>
+<div class="text-6xl sm:text-7xl my-3 animate-pulse-soft select-none">
+            👨‍🍳🍲🥪
+          </div>
+<h3 class="text-2xl sm:text-3xl font-extrabold text-slate-700 mt-2">
+            Learn Words. Pick a Card. <br class="hidden sm:inline"/>Create a Dialogue!
+          </h3>
+<p class="text-slate-500 font-semibold max-w-md mt-2 text-sm sm:text-base">
+            Join our canteen adventure! Explore Indonesian school dishes, learn polite English ordering phrases, and speak with confidence!
+          </p>
+<button class="mt-8 group relative inline-flex items-center justify-center px-10 py-4 font-black text-xl text-white bg-rose-500 rounded-full border-4 border-rose-300 shadow-bubbly hover:bg-rose-600 active:translate-y-1 transition-all" onclick="goToSlide(2)">
+<span class="mr-2">🚀</span> START EXPLORING
+          </button>
+</div>
+<!-- ================= SLIDE 2: MAIN MENU ================= -->
+<div class="slide-page w-full hidden" id="slide-2">
+<div class="text-center mb-6">
+<span class="bg-amber-100 text-amber-800 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Navigation Hub</span>
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">Where Do You Want to Go?</h2>
+<p class="text-slate-500 text-sm font-semibold">Choose an activity to start practicing canteen conversations!</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto w-full">
+<!-- Card 1: LEARN -->
+<button class="card-hover-pop bg-amber-50 hover:bg-amber-100 border-3 border-amber-300 rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-sm" onclick="goToSlide(3)">
+<div class="w-14 h-14 rounded-2xl bg-amber-300 flex items-center justify-center text-3xl mb-2 shadow-inner">📖</div>
+<span class="font-black text-amber-900 text-base">LEARN</span>
+<p class="text-xs font-bold text-amber-700 mt-0.5">Vocabulary &amp; expressions</p>
+</button>
+<!-- Card 2: MINI QUIZ -->
+<button class="card-hover-pop bg-rose-50 hover:bg-rose-100 border-3 border-rose-300 rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-sm" onclick="goToSlide(8)">
+<div class="w-14 h-14 rounded-2xl bg-rose-300 flex items-center justify-center text-3xl mb-2 shadow-inner">❓</div>
+<span class="font-black text-rose-900 text-base">MINI QUIZ</span>
+<p class="text-xs font-bold text-rose-700 mt-0.5">Check your understanding</p>
+</button>
+<!-- Card 3: MYSTERY CARDS -->
+<button class="card-hover-pop bg-purple-50 hover:bg-purple-100 border-3 border-purple-300 rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-sm" onclick="goToSlide(11)">
+<div class="w-14 h-14 rounded-2xl bg-purple-300 flex items-center justify-center text-3xl mb-2 shadow-inner">🃏</div>
+<span class="font-black text-purple-900 text-base">MYSTERY CARDS</span>
+<p class="text-xs font-bold text-purple-700 mt-0.5">Discover a secret word</p>
+</button>
+<!-- Card 4: DIALOGUE LAB -->
+<button class="card-hover-pop bg-teal-50 hover:bg-teal-100 border-3 border-teal-300 rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-sm" onclick="goToSlide(16)">
+<div class="w-14 h-14 rounded-2xl bg-teal-300 flex items-center justify-center text-3xl mb-2 shadow-inner">💬</div>
+<span class="font-black text-teal-900 text-base">DIALOGUE LAB</span>
+<p class="text-xs font-bold text-teal-700 mt-0.5">Create a conversation</p>
+</button>
+<!-- Card 5: SPEAKING CHALLENGE -->
+<button class="card-hover-pop bg-blue-50 hover:bg-blue-100 border-3 border-blue-300 rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-sm" onclick="goToSlide(18)">
+<div class="w-14 h-14 rounded-2xl bg-blue-300 flex items-center justify-center text-3xl mb-2 shadow-inner">🎤</div>
+<span class="font-black text-blue-900 text-base">SPEAKING CHALLENGE</span>
+<p class="text-xs font-bold text-blue-700 mt-0.5">Perform with a partner</p>
+</button>
+<!-- Card 6: REFLECTION -->
+<button class="card-hover-pop bg-emerald-50 hover:bg-emerald-100 border-3 border-emerald-300 rounded-2xl p-4 text-center flex flex-col items-center justify-center shadow-sm" onclick="goToSlide(19)">
+<div class="w-14 h-14 rounded-2xl bg-emerald-300 flex items-center justify-center text-3xl mb-2 shadow-inner">🌟</div>
+<span class="font-black text-emerald-900 text-base">REFLECTION</span>
+<p class="text-xs font-bold text-emerald-700 mt-0.5">Review your learning</p>
+</button>
+</div>
+</div>
+<!-- ================= SLIDE 3: TODAY'S MISSION ================= -->
+<div class="slide-page w-full hidden max-w-3xl mx-auto" id="slide-3">
+<div class="text-center mb-6">
+<h2 class="text-2xl sm:text-3xl font-black text-amber-600">Your Learning Mission! 🎯</h2>
+<p class="text-slate-500 font-bold text-sm">Complete all 4 checkpoints to become a Certified WordQuest Explorer!</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex items-center space-x-4 shadow-sm">
+<span class="w-10 h-10 rounded-full bg-amber-500 text-white font-black flex items-center justify-center text-lg flex-shrink-0">1</span>
+<div>
+<h4 class="font-black text-amber-950 text-base">Identify Food &amp; Drink</h4>
+<p class="text-xs font-bold text-amber-800">Learn vocabulary for canteen treats in both English and Indonesian.</p>
+</div>
+</div>
+<div class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 flex items-center space-x-4 shadow-sm">
+<span class="w-10 h-10 rounded-full bg-rose-500 text-white font-black flex items-center justify-center text-lg flex-shrink-0">2</span>
+<div>
+<h4 class="font-black text-rose-950 text-base">Use Polite Ordering</h4>
+<p class="text-xs font-bold text-rose-800">Master expressions like <em>"I'd like...", "How much is it?"</em> and <em>"Please"</em>.</p>
+</div>
+</div>
+<div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-4 flex items-center space-x-4 shadow-sm">
+<span class="w-10 h-10 rounded-full bg-sky-500 text-white font-black flex items-center justify-center text-lg flex-shrink-0">3</span>
+<div>
+<h4 class="font-black text-sky-950 text-base">Create a Short Dialogue</h4>
+<p class="text-xs font-bold text-sky-800">Fill in the blanks and assemble your personalized ordering dialogue.</p>
+</div>
+</div>
+<div class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 flex items-center space-x-4 shadow-sm">
+<span class="w-10 h-10 rounded-full bg-emerald-500 text-white font-black flex items-center justify-center text-lg flex-shrink-0">4</span>
+<div>
+<h4 class="font-black text-emerald-950 text-base">Speak with a Partner</h4>
+<p class="text-xs font-bold text-emerald-800">Role-play as Buyer and Canteen Keeper with clear pronunciation.</p>
+</div>
+</div>
+</div>
+<div class="mt-6 text-center bg-teal-50 border border-teal-200 rounded-xl p-3">
+<p class="text-xs sm:text-sm font-black text-teal-800">
+              💡 Tip: Click on any food card or dialogue card later to hear pronunciation hints!
+            </p>
+</div>
+</div>
+<!-- ================= SLIDE 4: EXPLORE THE CANTEEN ================= -->
+<div class="slide-page w-full hidden max-w-4xl mx-auto" id="slide-4">
+<div class="text-center mb-3">
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800">Explore the School Canteen</h2>
+<p class="text-sm font-bold text-slate-500">The customer orders tasty food from the friendly seller!</p>
+</div>
+<!-- Interactive Illustrated Scene -->
+<div class="relative bg-gradient-to-b from-amber-100 to-orange-50 border-4 border-amber-300 rounded-3xl p-6 shadow-inner flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+<!-- Background Canteen Blackboard Menu -->
+<div class="w-full md:w-44 bg-slate-800 text-white rounded-2xl p-3 border-4 border-amber-700 shadow-md">
+<div class="text-center font-black text-amber-300 text-xs border-b border-slate-600 pb-1 mb-2">⭐ MENU ⭐</div>
+<ul class="text-xs space-y-1 font-bold text-slate-200">
+<li class="flex justify-between"><span>Nasi Goreng</span> <span class="text-amber-400">10k</span></li>
+<li class="flex justify-between"><span>Mie Goreng</span> <span class="text-amber-400">8k</span></li>
+<li class="flex justify-between"><span>Bakwan</span> <span class="text-amber-400">2k</span></li>
+<li class="flex justify-between"><span>Pastel</span> <span class="text-amber-400">4k</span></li>
+<li class="flex justify-between"><span>Teh Es</span> <span class="text-amber-400">3k</span></li>
+<li class="flex justify-between"><span>Es Jeruk</span> <span class="text-amber-400">5k</span></li>
+</ul>
+</div>
+<!-- Customer & Seller Interactive Characters -->
+<div class="flex-1 flex items-center justify-around w-full">
+<!-- Customer -->
+<div class="flex flex-col items-center">
+<div class="bg-white px-3 py-1.5 rounded-2xl shadow border-2 border-sky-300 text-xs font-black text-sky-800 mb-2 animate-bounce-gentle">
+                  "I'd like a pastel, please!"
+                </div>
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-sky-200 border-4 border-sky-400 flex items-center justify-center text-5xl shadow-md">
+                  🧑‍🎓
+                </div>
+<span class="mt-2 text-xs font-black bg-sky-600 text-white px-3 py-0.5 rounded-full uppercase">Customer</span>
+</div>
+<!-- Counter Desk Divider -->
+<div class="hidden sm:flex flex-col items-center text-center px-2">
+<span class="text-3xl">🛎️</span>
+<span class="text-[11px] font-black text-amber-700 uppercase tracking-wider bg-amber-200 px-2 py-0.5 rounded-md mt-1">Order Desk</span>
+</div>
+<!-- Seller -->
+<div class="flex flex-col items-center">
+<div class="bg-white px-3 py-1.5 rounded-2xl shadow border-2 border-emerald-300 text-xs font-black text-emerald-800 mb-2">
+                  "Sure! Anything else?"
+                </div>
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-amber-200 border-4 border-amber-400 flex items-center justify-center text-5xl shadow-md">
+                  👩‍🍳
+                </div>
+<span class="mt-2 text-xs font-black bg-amber-600 text-white px-3 py-0.5 rounded-full uppercase">Seller (Ibu Kantin)</span>
+</div>
+</div>
+</div>
+<p class="text-center text-xs sm:text-sm font-bold text-slate-600 mt-4">
+            Notice how the customer uses polite phrasing when making a request at the counter.
+          </p>
+</div>
+<!-- ================= SLIDE 5: FOOD VOCABULARY ================= -->
+<div class="slide-page w-full hidden max-w-4xl mx-auto" id="slide-5">
+<div class="text-center mb-4">
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800">Let's Explore the Food! 🍛</h2>
+<p class="text-xs sm:text-sm font-bold text-slate-500">Click any card to inspect vocabulary and pronounce it!</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+<!-- 1. Fried Rice -->
+<div class="card-hover-pop cursor-pointer bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center shadow-sm" onclick="speakWord('Fried Rice')">
+<div class="text-4xl mb-1">🍳🍚</div>
+<h3 class="font-black text-amber-950 text-base">Fried rice</h3>
+<p class="text-xs font-extrabold text-amber-700 italic">(nasi goreng)</p>
+</div>
+<!-- 2. Noodles -->
+<div class="card-hover-pop cursor-pointer bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center shadow-sm" onclick="speakWord('Noodles')">
+<div class="text-4xl mb-1">🍜</div>
+<h3 class="font-black text-amber-950 text-base">Noodles</h3>
+<p class="text-xs font-extrabold text-amber-700 italic">(mi / mie)</p>
+</div>
+<!-- 3. Chicken Satay -->
+<div class="card-hover-pop cursor-pointer bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center shadow-sm" onclick="speakWord('Chicken Satay')">
+<div class="text-4xl mb-1">🍢</div>
+<h3 class="font-black text-amber-950 text-base">Chicken satay</h3>
+<p class="text-xs font-extrabold text-amber-700 italic">(sate ayam)</p>
+</div>
+<!-- 4. Bakwan -->
+<div class="card-hover-pop cursor-pointer bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center shadow-sm" onclick="speakWord('Vegetable Fritter')">
+<div class="text-4xl mb-1">🥟</div>
+<h3 class="font-black text-amber-950 text-base">Bakwan</h3>
+<p class="text-xs font-extrabold text-amber-700 italic">(vegetable fritter)</p>
+</div>
+<!-- 5. Pastel -->
+<div class="card-hover-pop cursor-pointer bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center shadow-sm" onclick="speakWord('Pastel')">
+<div class="text-4xl mb-1">🥐</div>
+<h3 class="font-black text-amber-950 text-base">Pastel</h3>
+<p class="text-xs font-extrabold text-amber-700 italic">(pastry / savory pocket)</p>
+</div>
+<!-- 6. Fried Chicken -->
+<div class="card-hover-pop cursor-pointer bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center shadow-sm" onclick="speakWord('Fried Chicken')">
+<div class="text-4xl mb-1">🍗</div>
+<h3 class="font-black text-amber-950 text-base">Fried chicken</h3>
+<p class="text-xs font-extrabold text-amber-700 italic">(ayam goreng)</p>
+</div>
+</div>
+</div>
+<!-- ================= SLIDE 6: DRINK VOCABULARY ================= -->
+<div class="slide-page w-full hidden max-w-4xl mx-auto" id="slide-6">
+<div class="text-center mb-5">
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800">Something to Drink? 🥤</h2>
+<p class="text-xs sm:text-sm font-bold text-slate-500">Refreshing drinks commonly found in Indonesian school canteens.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<!-- Mineral Water -->
+<div class="card-hover-pop cursor-pointer bg-sky-50 border-2 border-sky-300 rounded-2xl p-4 text-center shadow-sm" onclick="speakWord('Mineral Water')">
+<div class="text-5xl mb-2">🧊💧</div>
+<h3 class="font-black text-sky-950 text-base">Mineral water</h3>
+<p class="text-xs font-extrabold text-sky-700 italic">(air mineral)</p>
+</div>
+<!-- Iced Tea -->
+<div class="card-hover-pop cursor-pointer bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 text-center shadow-sm" onclick="speakWord('Iced Tea')">
+<div class="text-5xl mb-2">🧋</div>
+<h3 class="font-black text-amber-950 text-base">Iced tea</h3>
+<p class="text-xs font-extrabold text-amber-800 italic">(teh es / es teh)</p>
+</div>
+<!-- Orange Juice -->
+<div class="card-hover-pop cursor-pointer bg-orange-50 border-2 border-orange-300 rounded-2xl p-4 text-center shadow-sm" onclick="speakWord('Orange Juice')">
+<div class="text-5xl mb-2">🍊🍹</div>
+<h3 class="font-black text-orange-950 text-base">Orange juice</h3>
+<p class="text-xs font-extrabold text-orange-700 italic">(jus jeruk)</p>
+</div>
+<!-- Milk -->
+<div class="card-hover-pop cursor-pointer bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 text-center shadow-sm" onclick="speakWord('Milk')">
+<div class="text-5xl mb-2">🥛</div>
+<h3 class="font-black text-indigo-950 text-base">Milk</h3>
+<p class="text-xs font-extrabold text-indigo-700 italic">(susu)</p>
+</div>
+</div>
+</div>
+<!-- ================= SLIDE 7: USEFUL EXPRESSIONS ================= -->
+<div class="slide-page w-full hidden max-w-4xl mx-auto" id="slide-7">
+<div class="text-center mb-4">
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800">Let's Talk at the Canteen! 💬</h2>
+<p class="text-xs sm:text-sm font-bold text-slate-500">Key expressions used when ordering food &amp; drinks</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Left: Expression Cards -->
+<div class="space-y-2">
+<div class="bg-rose-100 border border-rose-300 text-rose-900 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between">
+<span>"Good morning!"</span>
+<span class="text-xs bg-rose-200 px-2 py-0.5 rounded-md">Greeting</span>
+</div>
+<div class="bg-amber-100 border border-amber-300 text-amber-900 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between">
+<span>"What would you like?"</span>
+<span class="text-xs bg-amber-200 px-2 py-0.5 rounded-md">Asking</span>
+</div>
+<div class="bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between">
+<span>"I'd like a pastel, please."</span>
+<span class="text-xs bg-emerald-200 px-2 py-0.5 rounded-md">Ordering</span>
+</div>
+<div class="bg-purple-100 border border-purple-300 text-purple-900 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between">
+<span>"Anything else?"</span>
+<span class="text-xs bg-purple-200 px-2 py-0.5 rounded-md">Seller Check</span>
+</div>
+<div class="bg-sky-100 border border-sky-300 text-sky-900 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between">
+<span>"How much is it?"</span>
+<span class="text-xs bg-sky-200 px-2 py-0.5 rounded-md">Price Enquiry</span>
+</div>
+<div class="bg-teal-100 border border-teal-300 text-teal-900 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold flex items-center justify-between">
+<span>"Here you are. / Thank you!"</span>
+<span class="text-xs bg-teal-200 px-2 py-0.5 rounded-md">Politeness</span>
+</div>
+</div>
+<!-- Right: Model Dialogue Box -->
+<div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex flex-col justify-between">
+<div>
+<h4 class="font-black text-amber-900 text-sm border-b pb-1 mb-2 border-amber-200">Model Dialogue</h4>
+<div class="space-y-1.5 text-xs sm:text-sm font-semibold">
+<p><span class="text-amber-800 font-black">Seller:</span> Hello! What would you like?</p>
+<p><span class="text-teal-700 font-black">Customer:</span> I'd like a pastel, please.</p>
+<p><span class="text-amber-800 font-black">Seller:</span> Anything else?</p>
+<p><span class="text-teal-700 font-black">Customer:</span> No, thank you. How much is it?</p>
+<p><span class="text-amber-800 font-black">Seller:</span> It's four thousand rupiah, please.</p>
+<p><span class="text-teal-700 font-black">Customer:</span> Here you are.</p>
+<p><span class="text-amber-800 font-black">Seller:</span> Thank you!</p>
+</div>
+</div>
+<div class="mt-3 bg-white p-2 rounded-xl text-center border border-amber-200">
+<span class="text-xs font-bold text-amber-900">✨ Polite word tip: Always remember to say <strong>"please"</strong> and <strong>"thank you"</strong>!</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= SLIDE 8: MINI QUIZ ================= -->
+<div class="slide-page w-full hidden max-w-2xl mx-auto" id="slide-8">
+<div class="text-center mb-5">
+<span class="bg-rose-100 text-rose-800 text-xs font-black px-3 py-1 rounded-full uppercase">Quick Check!</span>
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">Test Your Understanding ✍️</h2>
+<p class="text-slate-500 font-bold text-xs sm:text-sm">Select the correct answer to move forward:</p>
+</div>
+<!-- Dynamic Quiz Container -->
+<div class="bg-white border-3 border-teal-300 rounded-3xl p-6 shadow-md" id="quizQuestionBox">
+<div class="flex items-center justify-between mb-3 text-xs font-black text-teal-800">
+<span id="quizNumberLabel">Question 1 of 3</span>
+<span class="bg-teal-100 px-2 py-0.5 rounded-full">Vocabulary Check</span>
+</div>
+<p class="text-lg sm:text-xl font-black text-slate-800 mb-5" id="quizPromptText">
+              Which English word means "air mineral"?
+            </p>
+<div class="space-y-3" id="quizOptionsList">
+<!-- Rendered via JS -->
+</div>
+</div>
+</div>
+<!-- ================= SLIDE 9: QUIZ FEEDBACK - CORRECT ================= -->
+<div class="slide-page w-full hidden max-w-xl mx-auto text-center" id="slide-9">
+<div class="w-20 h-20 bg-emerald-100 border-4 border-emerald-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-3 shadow">
+            🎉
+          </div>
+<h2 class="text-3xl sm:text-4xl font-black text-emerald-600">Great Job!</h2>
+<p class="text-lg font-bold text-slate-700 mt-1">Correct! Well done!</p>
+<div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 my-6 text-sm text-emerald-950 font-bold max-w-md mx-auto">
+<p id="correctFeedbackDetail">"Mineral water" means air mineral. Keep up the awesome work!</p>
+</div>
+<div class="flex items-center justify-center space-x-3">
+<button class="px-5 py-2.5 rounded-full bg-slate-200 hover:bg-slate-300 font-black text-sm text-slate-700" onclick="goToSlide(8)">
+              Try Again
+            </button>
+<button class="px-6 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-600 font-black text-sm text-white shadow-bubbly" onclick="goToSlide(11)">
+              Next Challenge ➜
+            </button>
+</div>
+</div>
+<!-- ================= SLIDE 10: QUIZ FEEDBACK - INCORRECT ================= -->
+<div class="slide-page w-full hidden max-w-xl mx-auto text-center" id="slide-10">
+<div class="w-20 h-20 bg-rose-100 border-4 border-rose-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-3 shadow">
+            💡
+          </div>
+<h2 class="text-3xl sm:text-4xl font-black text-rose-500">Not Quite! Try Again!</h2>
+<p class="text-sm sm:text-base font-bold text-slate-600 mt-1">Good try! Let's learn from the answer.</p>
+<div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 my-6 text-sm text-rose-950 font-bold max-w-md mx-auto">
+<p id="incorrectFeedbackDetail">Remember: "Mineral water" corresponds directly to "air mineral".</p>
+</div>
+<div class="flex items-center justify-center space-x-3">
+<button class="px-6 py-2.5 rounded-full bg-rose-500 hover:bg-rose-600 font-black text-sm text-white shadow-bubbly" onclick="goToSlide(8)">
+              🔄 Try Again
+            </button>
+<button class="px-5 py-2.5 rounded-full bg-slate-200 hover:bg-slate-300 font-black text-sm text-slate-700" onclick="goToSlide(5)">
+              Review Vocabulary
+            </button>
+</div>
+</div>
+<!-- ================= SLIDE 11: MYSTERY FLASHCARD CHALLENGE ================= -->
+<div class="slide-page w-full hidden max-w-3xl mx-auto text-center" id="slide-11">
+<span class="bg-purple-100 text-purple-800 text-xs font-black px-3 py-1 rounded-full uppercase">Mystery Cards</span>
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">Pick a Mystery Card! 🃏</h2>
+<p class="text-slate-500 font-bold text-xs sm:text-sm mb-6">Choose ONE card to discover your secret canteen food or drink!</p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<!-- Card A -->
+<button class="card-hover-pop group bg-gradient-to-br from-rose-400 to-rose-500 text-white p-6 rounded-3xl border-4 border-white shadow-card-lift flex flex-col items-center" onclick="goToSlide(12)">
+<span class="text-xs font-black tracking-widest text-rose-200 uppercase">Card</span>
+<span class="text-4xl sm:text-5xl font-black my-2">A</span>
+<span class="text-2xl">❓</span>
+</button>
+<!-- Card B -->
+<button class="card-hover-pop group bg-gradient-to-br from-sky-400 to-sky-600 text-white p-6 rounded-3xl border-4 border-white shadow-card-lift flex flex-col items-center" onclick="goToSlide(13)">
+<span class="text-xs font-black tracking-widest text-sky-200 uppercase">Card</span>
+<span class="text-4xl sm:text-5xl font-black my-2">B</span>
+<span class="text-2xl">❓</span>
+</button>
+<!-- Card C -->
+<button class="card-hover-pop group bg-gradient-to-br from-amber-400 to-amber-500 text-white p-6 rounded-3xl border-4 border-white shadow-card-lift flex flex-col items-center" onclick="goToSlide(14)">
+<span class="text-xs font-black tracking-widest text-amber-200 uppercase">Card</span>
+<span class="text-4xl sm:text-5xl font-black my-2">C</span>
+<span class="text-2xl">❓</span>
+</button>
+<!-- Card D -->
+<button class="card-hover-pop group bg-gradient-to-br from-purple-400 to-purple-600 text-white p-6 rounded-3xl border-4 border-white shadow-card-lift flex flex-col items-center" onclick="goToSlide(15)">
+<span class="text-xs font-black tracking-widest text-purple-200 uppercase">Card</span>
+<span class="text-4xl sm:text-5xl font-black my-2">D</span>
+<span class="text-2xl">❓</span>
+</button>
+</div>
+</div>
+<!-- ================= SLIDE 12: CARD REVEAL A - PASTEL ================= -->
+<div class="slide-page w-full hidden max-w-2xl mx-auto" id="slide-12">
+<div class="text-center mb-3">
+<span class="bg-rose-100 text-rose-800 text-xs font-black px-3 py-1 rounded-full uppercase">Card A Revealed</span>
+<h2 class="text-2xl sm:text-3xl font-black text-rose-600 mt-1">You Discovered: Pastel! 🥐</h2>
+</div>
+<div class="bg-rose-50 border-3 border-rose-300 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row items-center gap-5">
+<div class="w-32 h-32 bg-white rounded-2xl border-2 border-rose-200 flex items-center justify-center text-6xl shadow-inner">
+              🥐
+            </div>
+<div class="flex-1 text-center sm:text-left space-y-1.5">
+<h3 class="text-xl font-black text-rose-950">PASTEL</h3>
+<p class="text-xs font-bold text-rose-700">A savory Indonesian fried pastry with vegetable &amp; egg filling.</p>
+<div class="text-xs font-extrabold text-slate-700">
+<span class="text-rose-800">Example:</span> <em>"I'd like a pastel, please."</em>
+</div>
+<div class="text-sm font-black text-amber-700 pt-1">
+                Price: <span class="bg-amber-100 px-2 py-0.5 rounded-md">Rp4,000</span>
+</div>
+</div>
+</div>
+<!-- Quick Interactive Ordering Action -->
+<div class="mt-4 bg-white border border-rose-200 rounded-2xl p-3 text-center">
+<p class="text-xs font-extrabold text-slate-500 mb-1">Quick Practice: What would you say if you wanted a pastel?</p>
+<p class="text-sm font-black text-teal-700 bg-teal-50 py-1.5 px-4 rounded-xl inline-block">"I'd like a pastel, please."</p>
+</div>
+<div class="mt-5 flex items-center justify-center gap-3">
+<button class="px-5 py-2 rounded-full bg-slate-200 hover:bg-slate-300 text-xs font-black text-slate-700" onclick="goToSlide(11)">Pick Another Card</button>
+<button class="px-6 py-2 rounded-full bg-teal-500 hover:bg-teal-600 text-xs font-black text-white shadow" onclick="goToSlide(16)">Create a Dialogue</button>
+</div>
+</div>
+<!-- ================= SLIDE 13: CARD REVEAL B - ICED TEA ================= -->
+<div class="slide-page w-full hidden max-w-2xl mx-auto" id="slide-13">
+<div class="text-center mb-3">
+<span class="bg-sky-100 text-sky-800 text-xs font-black px-3 py-1 rounded-full uppercase">Card B Revealed</span>
+<h2 class="text-2xl sm:text-3xl font-black text-sky-600 mt-1">You Discovered: Iced Tea! 🧋</h2>
+</div>
+<div class="bg-sky-50 border-3 border-sky-300 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row items-center gap-5">
+<div class="w-32 h-32 bg-white rounded-2xl border-2 border-sky-200 flex items-center justify-center text-6xl shadow-inner">
+              🧋
+            </div>
+<div class="flex-1 text-center sm:text-left space-y-1.5">
+<h3 class="text-xl font-black text-sky-950">ICED TEA</h3>
+<p class="text-xs font-bold text-sky-700">Sweet and chilled Indonesian tea (Teh Es / Es Teh manis).</p>
+<div class="text-xs font-extrabold text-slate-700">
+<span class="text-sky-800">Example:</span> <em>"I'd like an iced tea, please."</em>
+</div>
+<div class="text-sm font-black text-amber-700 pt-1">
+                Price: <span class="bg-amber-100 px-2 py-0.5 rounded-md">Rp3,000</span>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-white border border-sky-200 rounded-2xl p-3 text-center">
+<p class="text-xs font-extrabold text-slate-500 mb-1">Quick Practice: What would you say if you wanted iced tea?</p>
+<p class="text-sm font-black text-teal-700 bg-teal-50 py-1.5 px-4 rounded-xl inline-block">"I'd like an iced tea, please."</p>
+</div>
+<div class="mt-5 flex items-center justify-center gap-3">
+<button class="px-5 py-2 rounded-full bg-slate-200 hover:bg-slate-300 text-xs font-black text-slate-700" onclick="goToSlide(11)">Pick Another Card</button>
+<button class="px-6 py-2 rounded-full bg-teal-500 hover:bg-teal-600 text-xs font-black text-white shadow" onclick="goToSlide(16)">Create a Dialogue</button>
+</div>
+</div>
+<!-- ================= SLIDE 14: CARD REVEAL C - FRIED RICE ================= -->
+<div class="slide-page w-full hidden max-w-2xl mx-auto" id="slide-14">
+<div class="text-center mb-3">
+<span class="bg-amber-100 text-amber-800 text-xs font-black px-3 py-1 rounded-full uppercase">Card C Revealed</span>
+<h2 class="text-2xl sm:text-3xl font-black text-amber-600 mt-1">You Discovered: Fried Rice! 🍳</h2>
+</div>
+<div class="bg-amber-50 border-3 border-amber-300 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row items-center gap-5">
+<div class="w-32 h-32 bg-white rounded-2xl border-2 border-amber-200 flex items-center justify-center text-6xl shadow-inner">
+              🍳
+            </div>
+<div class="flex-1 text-center sm:text-left space-y-1.5">
+<h3 class="text-xl font-black text-amber-950">FRIED RICE</h3>
+<p class="text-xs font-bold text-amber-800">Classic fragrant Indonesian savory rice (Nasi Goreng).</p>
+<div class="text-xs font-extrabold text-slate-700">
+<span class="text-amber-800">Example:</span> <em>"I'd like fried rice, please."</em>
+</div>
+<div class="text-sm font-black text-amber-700 pt-1">
+                Price: <span class="bg-amber-100 px-2 py-0.5 rounded-md">Rp10,000</span>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-white border border-amber-200 rounded-2xl p-3 text-center">
+<p class="text-xs font-extrabold text-slate-500 mb-1">Quick Practice: What would you say if you wanted fried rice?</p>
+<p class="text-sm font-black text-teal-700 bg-teal-50 py-1.5 px-4 rounded-xl inline-block">"I'd like fried rice, please."</p>
+</div>
+<div class="mt-5 flex items-center justify-center gap-3">
+<button class="px-5 py-2 rounded-full bg-slate-200 hover:bg-slate-300 text-xs font-black text-slate-700" onclick="goToSlide(11)">Pick Another Card</button>
+<button class="px-6 py-2 rounded-full bg-teal-500 hover:bg-teal-600 text-xs font-black text-white shadow" onclick="goToSlide(16)">Create a Dialogue</button>
+</div>
+</div>
+<!-- ================= SLIDE 15: CARD REVEAL D - MINERAL WATER ================= -->
+<div class="slide-page w-full hidden max-w-2xl mx-auto" id="slide-15">
+<div class="text-center mb-3">
+<span class="bg-cyan-100 text-cyan-800 text-xs font-black px-3 py-1 rounded-full uppercase">Card D Revealed</span>
+<h2 class="text-2xl sm:text-3xl font-black text-cyan-600 mt-1">You Discovered: Mineral Water! 💧</h2>
+</div>
+<div class="bg-cyan-50 border-3 border-cyan-300 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row items-center gap-5">
+<div class="w-32 h-32 bg-white rounded-2xl border-2 border-cyan-200 flex items-center justify-center text-6xl shadow-inner">
+              🧊💧
+            </div>
+<div class="flex-1 text-center sm:text-left space-y-1.5">
+<h3 class="text-xl font-black text-cyan-950">MINERAL WATER</h3>
+<p class="text-xs font-bold text-cyan-800">Fresh bottled natural spring water (Air mineral).</p>
+<div class="text-xs font-extrabold text-slate-700">
+<span class="text-cyan-800">Example:</span> <em>"I'd like mineral water, please."</em>
+</div>
+<div class="text-sm font-black text-amber-700 pt-1">
+                Price: <span class="bg-amber-100 px-2 py-0.5 rounded-md">Rp3,000</span>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-white border border-cyan-200 rounded-2xl p-3 text-center">
+<p class="text-xs font-extrabold text-slate-500 mb-1">Quick Practice: What would you say if you wanted mineral water?</p>
+<p class="text-sm font-black text-teal-700 bg-teal-50 py-1.5 px-4 rounded-xl inline-block">"I'd like mineral water, please."</p>
+</div>
+<div class="mt-5 flex items-center justify-center gap-3">
+<button class="px-5 py-2 rounded-full bg-slate-200 hover:bg-slate-300 text-xs font-black text-slate-700" onclick="goToSlide(11)">Pick Another Card</button>
+<button class="px-6 py-2 rounded-full bg-teal-500 hover:bg-teal-600 text-xs font-black text-white shadow" onclick="goToSlide(16)">Create a Dialogue</button>
+</div>
+</div>
+<!-- ================= SLIDE 16: DIALOGUE LAB ================= -->
+<div class="slide-page w-full hidden max-w-3xl mx-auto" id="slide-16">
+<div class="text-center mb-3">
+<span class="bg-teal-100 text-teal-800 text-xs font-black px-3 py-1 rounded-full uppercase">Interactive Practice</span>
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">Let's Create Your Dialogue! 🧪</h2>
+<p class="text-xs sm:text-sm font-bold text-slate-500">Click word bank pills below to fill in your food and price!</p>
+</div>
+<!-- Fill-in Dialogue Card -->
+<div class="bg-slate-50 border-3 border-teal-300 rounded-2xl p-4 sm:p-5 shadow-sm space-y-2 text-xs sm:text-sm font-bold">
+<div class="flex items-start space-x-2">
+<span class="text-amber-800 font-black min-w-[70px]">Seller:</span>
+<span>Hello! What would you like?</span>
+</div>
+<!-- Customer line with dynamic slot 1 -->
+<div class="flex items-center space-x-2 bg-amber-50 p-2 rounded-xl border border-amber-200">
+<span class="text-teal-700 font-black min-w-[70px]">Customer:</span>
+<div class="flex items-center flex-wrap gap-1">
+<span>I'd like</span>
+<span class="px-3 py-1 bg-amber-200 border-2 border-dashed border-amber-400 text-amber-900 rounded-lg font-black min-w-[90px] text-center inline-block" id="slotFood">
+                  [ Click a food ]
+                </span>
+<span>, please.</span>
+</div>
+</div>
+<div class="flex items-start space-x-2">
+<span class="text-amber-800 font-black min-w-[70px]">Seller:</span>
+<span>Anything else?</span>
+</div>
+<div class="flex items-start space-x-2">
+<span class="text-teal-700 font-black min-w-[70px]">Customer:</span>
+<span>No, thank you. How much is it?</span>
+</div>
+<!-- Seller line with dynamic slot 2 -->
+<div class="flex items-center space-x-2 bg-sky-50 p-2 rounded-xl border border-sky-200">
+<span class="text-amber-800 font-black min-w-[70px]">Seller:</span>
+<div class="flex items-center flex-wrap gap-1">
+<span>It's</span>
+<span class="px-3 py-1 bg-sky-200 border-2 border-dashed border-sky-400 text-sky-900 rounded-lg font-black min-w-[90px] text-center inline-block" id="slotPrice">
+                  [ Click a price ]
+                </span>
+<span>rupiah.</span>
+</div>
+</div>
+<div class="flex items-start space-x-2">
+<span class="text-teal-700 font-black min-w-[70px]">Customer:</span>
+<span>Here you are. Thank you!</span>
+</div>
+</div>
+<!-- Vocabulary & Price Banks -->
+<div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div class="bg-white border-2 border-amber-200 rounded-xl p-3">
+<span class="text-[11px] font-black uppercase text-amber-700 tracking-wider">Vocabulary Bank:</span>
+<div class="flex flex-wrap gap-1.5 mt-2">
+<button class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg text-xs" onclick="fillSlot('slotFood', 'a pastel')">Pastel</button>
+<button class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg text-xs" onclick="fillSlot('slotFood', 'an iced tea')">Iced tea</button>
+<button class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg text-xs" onclick="fillSlot('slotFood', 'fried rice')">Fried rice</button>
+<button class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg text-xs" onclick="fillSlot('slotFood', 'mineral water')">Mineral water</button>
+</div>
+</div>
+<div class="bg-white border-2 border-sky-200 rounded-xl p-3">
+<span class="text-[11px] font-black uppercase text-sky-700 tracking-wider">Price Bank:</span>
+<div class="flex flex-wrap gap-1.5 mt-2">
+<button class="px-2.5 py-1 bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold rounded-lg text-xs" onclick="fillSlot('slotPrice', 'three thousand')">Rp3,000</button>
+<button class="px-2.5 py-1 bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold rounded-lg text-xs" onclick="fillSlot('slotPrice', 'four thousand')">Rp4,000</button>
+<button class="px-2.5 py-1 bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold rounded-lg text-xs" onclick="fillSlot('slotPrice', 'ten thousand')">Rp10,000</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= SLIDE 17: MODEL DIALOGUE EXAMPLE ================= -->
+<div class="slide-page w-full hidden max-w-3xl mx-auto" id="slide-17">
+<div class="text-center mb-3">
+<span class="bg-amber-100 text-amber-800 text-xs font-black px-3 py-1 rounded-full uppercase">Sample Reference</span>
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">Need an Example? 💡</h2>
+<p class="text-xs sm:text-sm font-bold text-slate-500">Here is a complete finished ordering conversation</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+<div class="md:col-span-2 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-4 text-xs sm:text-sm font-semibold space-y-2">
+<p><span class="text-amber-800 font-black">Seller:</span> Good morning! What would you like?</p>
+<p><span class="text-teal-700 font-black">Customer:</span> I'd like a pastel and an iced tea, please.</p>
+<p><span class="text-amber-800 font-black">Seller:</span> Sure! Anything else?</p>
+<p><span class="text-teal-700 font-black">Customer:</span> No, thank you. How much is it?</p>
+<p><span class="text-amber-800 font-black">Seller:</span> It's seven thousand rupiah, please.</p>
+<p><span class="text-teal-700 font-black">Customer:</span> Here you are. Thank you!</p>
+<p><span class="text-amber-800 font-black">Seller:</span> You're welcome!</p>
+</div>
+<!-- Receipt & Total Price -->
+<div class="bg-white border-2 border-slate-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+<div>
+<div class="text-center pb-2 border-b-2 border-dashed border-slate-300">
+<span class="font-black text-xs uppercase tracking-wider text-slate-400">Order Receipt</span>
+<p class="font-black text-slate-800 text-sm">Canteen VII</p>
+</div>
+<div class="text-xs space-y-1.5 mt-3 text-slate-600 font-bold">
+<div class="flex justify-between"><span>1x Pastel</span> <span>Rp4,000</span></div>
+<div class="flex justify-between"><span>1x Iced Tea</span> <span>Rp3,000</span></div>
+</div>
+</div>
+<div class="pt-3 border-t-2 border-slate-300">
+<div class="flex justify-between text-xs font-black text-emerald-800 bg-emerald-50 p-2 rounded-lg">
+<span>Total Price:</span>
+<span>Rp7,000</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 text-center">
+<p class="text-xs font-extrabold text-slate-500">Your dialogue can be different. Be creative with dishes and amounts!</p>
+</div>
+</div>
+<!-- ================= SLIDE 18: SPEAKING CHALLENGE ================= -->
+<div class="slide-page w-full hidden max-w-3xl mx-auto" id="slide-18">
+<div class="text-center mb-4">
+<span class="bg-blue-100 text-blue-800 text-xs font-black px-3 py-1 rounded-full uppercase">Pair Work</span>
+<h2 class="text-2xl sm:text-3xl font-black text-blue-900 mt-1">Speak Up! 🎙️</h2>
+<p class="text-xs sm:text-sm font-bold text-slate-500">Practice canteen role-play with your seatmate!</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Speaking Checklist -->
+<div class="bg-white border-2 border-blue-200 rounded-2xl p-4 shadow-sm">
+<h4 class="font-black text-blue-900 text-sm mb-3 flex items-center space-x-1.5">
+<span>📋</span> <span>Speaking Checklist</span>
+</h4>
+<div class="space-y-2 text-xs font-bold text-slate-700">
+<label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-blue-50 rounded-lg">
+<input class="rounded text-blue-600 focus:ring-0" type="checkbox"/>
+<span>Used the selected food or drink vocabulary</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-blue-50 rounded-lg">
+<input class="rounded text-blue-600 focus:ring-0" type="checkbox"/>
+<span>Used polite ordering expressions</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-blue-50 rounded-lg">
+<input class="rounded text-blue-600 focus:ring-0" type="checkbox"/>
+<span>Asked and answered about the price</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-blue-50 rounded-lg">
+<input class="rounded text-blue-600 focus:ring-0" type="checkbox"/>
+<span>Spoke clearly with good volume</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer p-1.5 hover:bg-blue-50 rounded-lg">
+<input class="rounded text-blue-600 focus:ring-0" type="checkbox"/>
+<span>Took turns speaking and listening</span>
+</label>
+</div>
+</div>
+<!-- Peer Feedback Card -->
+<div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+<div>
+<h4 class="font-black text-blue-950 text-sm mb-2">Peer Feedback Stars ⭐</h4>
+<p class="text-xs font-bold text-blue-800 mb-3">Rate your partner's conversation:</p>
+<div class="flex space-x-2 justify-center text-3xl my-2 cursor-pointer">
+<span class="text-amber-400" id="star-1" onclick="setStars(1)">★</span>
+<span class="text-amber-400" id="star-2" onclick="setStars(2)">★</span>
+<span class="text-amber-400" id="star-3" onclick="setStars(3)">★</span>
+<span class="text-amber-400" id="star-4" onclick="setStars(4)">★</span>
+<span class="text-slate-300" id="star-5" onclick="setStars(5)">★</span>
+</div>
+</div>
+<div class="bg-white p-2.5 rounded-xl border border-blue-200 text-center text-xs font-bold text-blue-900">
+                "Excellent teamwork and polite tone!"
+              </div>
+</div>
+</div>
+</div>
+<!-- ================= SLIDE 19: REFLECTION ================= -->
+<div class="slide-page w-full hidden max-w-3xl mx-auto" id="slide-19">
+<div class="text-center mb-5">
+<span class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full uppercase">Review</span>
+<h2 class="text-2xl sm:text-3xl font-black text-slate-800 mt-1">What Did You Learn Today? 🌟</h2>
+<p class="text-xs sm:text-sm font-bold text-slate-500">Reflect on your progress and select how you feel:</p>
+</div>
+<div class="grid grid-cols-3 gap-3 mb-6">
+<div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center">
+<span class="text-2xl">Aa</span>
+<p class="text-xs font-black text-amber-900 mt-1">Vocabulary</p>
+<p class="text-[11px] text-amber-700 font-bold">New food words</p>
+</div>
+<div class="bg-sky-50 border-2 border-sky-300 rounded-2xl p-3 text-center">
+<span class="text-2xl">💬</span>
+<p class="text-xs font-black text-sky-900 mt-1">Expressions</p>
+<p class="text-[11px] text-sky-700 font-bold">Polite requests</p>
+</div>
+<div class="bg-purple-50 border-2 border-purple-300 rounded-2xl p-3 text-center">
+<span class="text-2xl">🤝</span>
+<p class="text-xs font-black text-purple-900 mt-1">Dialogue</p>
+<p class="text-[11px] text-purple-700 font-bold">Real practice</p>
+</div>
+</div>
+<!-- Self-Assessment Smiley Buttons -->
+<div class="text-center bg-slate-50 border-2 border-slate-200 rounded-2xl p-4">
+<span class="text-xs font-black text-slate-600 uppercase tracking-wider">Self-Assessment</span>
+<div class="grid grid-cols-3 gap-3 mt-3">
+<button class="confidence-btn bg-white hover:bg-rose-50 border-2 border-slate-200 hover:border-rose-400 rounded-2xl p-3 transition flex flex-col items-center" onclick="selectConfidence(this)">
+<span class="text-3xl mb-1">🤔</span>
+<span class="text-xs font-extrabold text-slate-700">I need more practice.</span>
+</button>
+<button class="confidence-btn bg-white hover:bg-amber-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl p-3 transition flex flex-col items-center" onclick="selectConfidence(this)">
+<span class="text-3xl mb-1">🙂</span>
+<span class="text-xs font-extrabold text-slate-700">I can do it with help.</span>
+</button>
+<button class="confidence-btn bg-white hover:bg-emerald-50 border-2 border-emerald-400 bg-emerald-50/50 rounded-2xl p-3 transition flex flex-col items-center shadow-sm" onclick="selectConfidence(this)">
+<span class="text-3xl mb-1">😎</span>
+<span class="text-xs font-extrabold text-emerald-800">I can do it by myself!</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ================= SLIDE 20: MISSION COMPLETED ================= -->
+<div class="slide-page w-full hidden max-w-2xl mx-auto text-center py-2" id="slide-20">
+<div class="text-5xl animate-bounce-gentle mb-2">🏆🎊</div>
+<h2 class="text-3xl sm:text-4xl font-black text-amber-500 drop-shadow-sm">Mission Completed!</h2>
+<p class="text-base font-extrabold text-slate-700 mt-1">Great job, WordQuest Explorers! 🎉</p>
+<div class="bg-amber-50 border-3 border-amber-300 rounded-3xl p-5 my-6 text-left shadow-sm max-w-md mx-auto">
+<span class="text-xs font-black uppercase text-amber-800 tracking-wider">Learning Recap</span>
+<ul class="mt-2 space-y-2 text-xs sm:text-sm font-extrabold text-slate-700">
+<li class="flex items-center space-x-2 text-emerald-700">
+<span>✓</span> <span>I learned food and drink vocabulary.</span>
+</li>
+<li class="flex items-center space-x-2 text-emerald-700">
+<span>✓</span> <span>I practiced ordering expressions.</span>
+</li>
+<li class="flex items-center space-x-2 text-emerald-700">
+<span>✓</span> <span>I created a complete dialogue.</span>
+</li>
+<li class="flex items-center space-x-2 text-emerald-700">
+<span>✓</span> <span>I practiced speaking with a partner.</span>
+</li>
+</ul>
+</div>
+<div class="flex items-center justify-center space-x-4">
+<button class="px-6 py-3 rounded-full bg-rose-500 hover:bg-rose-600 font-black text-sm text-white shadow-bubbly active:translate-y-1" onclick="goToSlide(1)">
+              🔄 PLAY AGAIN
+            </button>
+<button class="px-6 py-3 rounded-full bg-teal-500 hover:bg-teal-600 font-black text-sm text-white shadow-bubbly active:translate-y-1" onclick="goToSlide(2)">
+              🏠 MAIN MENU
+            </button>
+</div>
+</div>
+</div>
+<!-- BEGIN: BottomPersistentControlBar -->
+<div class="bg-slate-50 border-t-2 border-slate-200 px-4 py-3 sm:px-8 flex items-center justify-between gap-2">
+<!-- Home Button -->
+<button class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-white border-2 border-slate-300 hover:border-amber-400 rounded-full font-black text-xs text-slate-700 shadow-sm active:translate-y-0.5" onclick="goToSlide(2)">
+<span>🏠</span>
+<span class="hidden sm:inline">HOME</span>
+</button>
+<!-- Stepper Indicators (Dots / Mini Bars) -->
+<div class="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto max-w-[200px] sm:max-w-md py-1 no-scrollbar" id="dotsContainer">
+<!-- Populated by JS -->
+</div>
+<!-- Back & Next Navigation -->
+<div class="flex items-center space-x-2">
+<button class="px-4 py-1.5 bg-white border-2 border-slate-300 hover:border-slate-400 rounded-full font-black text-xs text-slate-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" id="btnBack" onclick="prevSlide()">
+            ◀ BACK
+          </button>
+<button class="px-5 py-1.5 bg-teal-500 hover:bg-teal-600 border-2 border-teal-600 rounded-full font-black text-xs text-white shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" id="btnNext" onclick="nextSlide()">
+            NEXT ▶
+          </button>
+</div>
+</div>
+<!-- END: BottomPersistentControlBar -->
+</div>
+</main>
+<!-- END: MainContentStageArea -->
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="app-logic">
+    // Slide Metadata & Configuration (20 Slides)
+    const SLIDES_DATA = [
+      { id: 1, title: "1. Welcome", badge: "WELCOME", topic: "The School Canteen Adventure" },
+      { id: 2, title: "2. Main Menu", badge: "HOME", topic: "Select Your Learning Activity" },
+      { id: 3, title: "3. Today's Mission", badge: "LEARN", topic: "Mission Objectives & Milestones" },
+      { id: 4, title: "4. Explore the Canteen", badge: "LEARN", topic: "Canteen Counter Environment" },
+      { id: 5, title: "5. Food Vocabulary", badge: "VOCABULARY", topic: "School Canteen Foods" },
+      { id: 6, title: "6. Drink Vocabulary", badge: "VOCABULARY", topic: "Refreshing School Drinks" },
+      { id: 7, title: "7. Useful Expressions", badge: "EXPRESSIONS", topic: "Ordering Phrases & Dialogue" },
+      { id: 8, title: "8. Mini Quiz", badge: "MINI QUIZ", topic: "Quick Knowledge Check" },
+      { id: 9, title: "9. Feedback: Correct", badge: "QUIZ FEEDBACK", topic: "Great Job!" },
+      { id: 10, title: "10. Feedback: Try Again", badge: "QUIZ FEEDBACK", topic: "Review & Learn" },
+      { id: 11, title: "11. Mystery Cards", badge: "MYSTERY CARDS", topic: "Pick a Mystery Card" },
+      { id: 12, title: "12. Reveal: Pastel", badge: "CARD REVEAL", topic: "Card A: Savory Pastry" },
+      { id: 13, title: "13. Reveal: Iced Tea", badge: "CARD REVEAL", topic: "Card B: Sweet Iced Tea" },
+      { id: 14, title: "14. Reveal: Fried Rice", badge: "CARD REVEAL", topic: "Card C: Indonesian Fried Rice" },
+      { id: 15, title: "15. Reveal: Mineral Water", badge: "CARD REVEAL", topic: "Card D: Pure Mineral Water" },
+      { id: 16, title: "16. Dialogue Lab", badge: "DIALOGUE LAB", topic: "Fill-in Conversation Lab" },
+      { id: 17, title: "17. Model Dialogue", badge: "DIALOGUE EXAMPLE", topic: "Order & Price Breakdown" },
+      { id: 18, title: "18. Speaking Challenge", badge: "SPEAKING", topic: "Role-Play With Partner" },
+      { id: 19, title: "19. Reflection", badge: "REFLECTION", topic: "Self-Check & Confidence" },
+      { id: 20, title: "20. Mission Completed", badge: "FINISH", topic: "Congratulations Explorer!" },
+    ];
+
+    let currentSlide = 1;
+
+    // Quiz Questions Data for Slide 8
+    const QUIZ_QUESTIONS = [
+      {
+        question: "Which English word means 'air mineral'?",
+        options: [
+          { text: "A. Mineral water", correct: true },
+          { text: "B. Pastel", correct: false },
+          { text: "C. Noodles", correct: false }
+        ],
+        explanation: "'Mineral water' directly means air mineral."
+      },
+      {
+        question: "Which food is a traditional Indonesian vegetable fritter?",
+        options: [
+          { text: "A. Milk", correct: false },
+          { text: "B. Bakwan", correct: true },
+          { text: "C. Orange juice", correct: false }
+        ],
+        explanation: "'Bakwan' is a beloved Indonesian vegetable fritter."
+      },
+      {
+        question: "Which word means 'mi / mie'?",
+        options: [
+          { text: "A. Noodles", correct: true },
+          { text: "B. Fried chicken", correct: false },
+          { text: "C. Iced tea", correct: false }
+        ],
+        explanation: "'Noodles' is the English word for mi."
+      }
+    ];
+
+    let currentQuizIndex = 0;
+
+    // Initialize Dropdown & Stepper Dots
+    function initUI() {
+      const dropdown = document.getElementById('slideDropdown');
+      const dotsContainer = document.getElementById('dotsContainer');
+
+      dropdown.innerHTML = '';
+      dotsContainer.innerHTML = '';
+
+      SLIDES_DATA.forEach((s) => {
+        // Dropdown options
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.title;
+        dropdown.appendChild(opt);
+
+        // Dot buttons
+        const dot = document.createElement('button');
+        dot.id = `dot-${s.id}`;
+        dot.onclick = () => goToSlide(s.id);
+        dot.className = `w-2.5 h-2.5 rounded-full transition-all ${s.id === 1 ? 'bg-rose-500 w-5' : 'bg-slate-300'}`;
+        dotsContainer.appendChild(dot);
+      });
+
+      renderQuizQuestion();
+      updateSlideDisplay();
+    }
+
+    // Go to specific slide
+    function goToSlide(slideNum) {
+      if (slideNum < 1) slideNum = 1;
+      if (slideNum > 20) slideNum = 20;
+
+      // Hide all slides
+      document.querySelectorAll('.slide-page').forEach(page => {
+        page.classList.add('hidden');
+      });
+
+      // Show current slide
+      const currentElement = document.getElementById(`slide-${slideNum}`);
+      if (currentElement) {
+        currentElement.classList.remove('hidden');
+      }
+
+      currentSlide = slideNum;
+      updateSlideDisplay();
+    }
+
+    function nextSlide() {
+      if (currentSlide < 20) {
+        goToSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        goToSlide(currentSlide - 1);
+      }
+    }
+
+    // Update Top & Bottom Status Controls
+    function updateSlideDisplay() {
+      const info = SLIDES_DATA.find(s => s.id === currentSlide) || SLIDES_DATA[0];
+
+      // Update counters
+      document.getElementById('slideCounterText').textContent = currentSlide;
+      document.getElementById('slideDropdown').value = currentSlide;
+      document.getElementById('slideCategoryBadge').textContent = info.badge;
+      document.getElementById('slideTopicName').textContent = info.topic;
+
+      // Update Stepper dots
+      SLIDES_DATA.forEach(s => {
+        const dot = document.getElementById(`dot-${s.id}`);
+        if (dot) {
+          if (s.id === currentSlide) {
+            dot.className = 'w-5 h-2.5 rounded-full bg-rose-500 transition-all';
+          } else {
+            dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-300 transition-all';
+          }
+        }
+      });
+
+      // Update Back / Next Button states
+      document.getElementById('btnBack').disabled = currentSlide === 1;
+      document.getElementById('btnNext').disabled = currentSlide === 20;
+    }
+
+    // Quiz Rendering & Selection Logic
+    function renderQuizQuestion() {
+      const q = QUIZ_QUESTIONS[currentQuizIndex];
+      const promptElem = document.getElementById('quizPromptText');
+      const numberLabel = document.getElementById('quizNumberLabel');
+      const optionsBox = document.getElementById('quizOptionsList');
+
+      if (!promptElem || !optionsBox) return;
+
+      numberLabel.textContent = `Question ${currentQuizIndex + 1} of ${QUIZ_QUESTIONS.length}`;
+      promptElem.textContent = q.question;
+      optionsBox.innerHTML = '';
+
+      q.options.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left font-bold text-slate-800 text-sm sm:text-base bg-slate-100 hover:bg-teal-50 border-2 border-slate-200 hover:border-teal-400 p-3 sm:p-4 rounded-2xl transition flex items-center justify-between";
+        btn.innerHTML = `<span>${opt.text}</span> <span class="text-teal-600">➜</span>`;
+        btn.onclick = () => handleQuizAnswer(opt.correct, q.explanation);
+        optionsBox.appendChild(btn);
+      });
+    }
+
+    function handleQuizAnswer(isCorrect, explanation) {
+      if (isCorrect) {
+        document.getElementById('correctFeedbackDetail').textContent = explanation;
+        goToSlide(9); // Correct Feedback slide
+        // advance quiz question for next attempt
+        currentQuizIndex = (currentQuizIndex + 1) % QUIZ_QUESTIONS.length;
+        renderQuizQuestion();
+      } else {
+        document.getElementById('incorrectFeedbackDetail').textContent = explanation;
+        goToSlide(10); // Incorrect Feedback slide
+      }
+    }
+
+    // Speech simulation / Pronounce helper
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Dialogue Lab Interactive Filling
+    function fillSlot(slotId, value) {
+      const slot = document.getElementById(slotId);
+      if (slot) {
+        slot.textContent = value;
+        slot.classList.remove('border-dashed');
+        slot.classList.add('border-solid', 'scale-105');
+        setTimeout(() => slot.classList.remove('scale-105'), 200);
+      }
+    }
+
+    // Speaking Checklist Stars
+    function setStars(starCount) {
+      for (let i = 1; i <= 5; i++) {
+        const star = document.getElementById(`star-${i}`);
+        if (star) {
+          if (i <= starCount) {
+            star.className = 'text-amber-400';
+          } else {
+            star.className = 'text-slate-300';
+          }
+        }
+      }
+    }
+
+    // Reflection Confidence Selector
+    function selectConfidence(buttonElement) {
+      document.querySelectorAll('.confidence-btn').forEach(btn => {
+        btn.classList.remove('border-emerald-400', 'bg-emerald-50/50', 'shadow-sm');
+        btn.classList.add('border-slate-200');
+      });
+      buttonElement.classList.add('border-emerald-400', 'bg-emerald-50/50', 'shadow-sm');
+      buttonElement.classList.remove('border-slate-200');
+    }
+
+    // Keyboard Arrow navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // Run on startup
+    document.addEventListener('DOMContentLoaded', () => {
+      initUI();
+      goToSlide(1);
+    });
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>
